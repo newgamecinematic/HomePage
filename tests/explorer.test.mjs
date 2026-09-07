@@ -12,10 +12,10 @@ test('every region resolves to its own environment and own character', async () 
   const atlas = await setup();
   const paths = new Set();
   for (const [key, region] of Object.entries(atlas.regions)) {
-    assert.equal(atlas.resolveRegion(key).key, key);
+    assert.equal(atlas.resolveRegion(atlas.defaultWorld, key).key, key);
     paths.add(region.model);
     for (const character of region.characters) {
-      assert.equal(atlas.resolveCharacter(key, character.id).character.id, character.id);
+      assert.equal(atlas.resolveCharacter(atlas.defaultWorld, key, character.id).character.id, character.id);
       assert.equal(character.model, null, 'Unprovided characters must not use a sample robot');
     }
   }
@@ -24,17 +24,19 @@ test('every region resolves to its own environment and own character', async () 
 test('unknown and prototype keys resolve safely; foreign character does not leak between regions', async () => {
   const atlas = await setup();
   for (const id of ['unknown', '__proto__', 'constructor']) {
-    assert.equal(atlas.resolveRegion(id).key, 'grove');
-    assert.equal(atlas.resolveRegion(id).invalid, true);
+    assert.equal(atlas.resolveWorld(id).worldKey, atlas.defaultWorld);
+    assert.equal(atlas.resolveWorld(id).invalidWorld, true);
+    assert.equal(atlas.resolveRegion(atlas.defaultWorld, id).key, 'grove');
+    assert.equal(atlas.resolveRegion(atlas.defaultWorld, id).invalid, true);
   }
-  assert.equal(atlas.resolveCharacter('grove', 'warden').character.id, 'oracle');
-  assert.equal(atlas.resolveCharacter('grove', 'warden').invalid, true);
-  assert.equal(atlas.resolveRegion(null).invalid, false);
+  assert.equal(atlas.resolveCharacter(atlas.defaultWorld, 'grove', 'warden').character.id, 'oracle');
+  assert.equal(atlas.resolveCharacter(atlas.defaultWorld, 'grove', 'warden').invalid, true);
+  assert.equal(atlas.resolveRegion(null, null).invalid, false);
 });
 test('empty region roster is handled without throwing', async () => {
   const atlas = await setup();
   atlas.regions.grove.characters = [];
-  assert.equal(atlas.resolveCharacter('grove', 'missing').character, null);
+  assert.equal(atlas.resolveCharacter(atlas.defaultWorld, 'grove', 'missing').character, null);
 });
 test('device-local camera survives navigation and corrupt values are ignored', async () => {
   const storage = new Map(); const atlas = await setup(storage);
@@ -58,7 +60,7 @@ test('each extracted GLB contains only its own island and valid referenced binar
   }
 });
 test('all page assets resolve and shared scripts load before route scripts', async () => {
-  for (const [page, script] of [['index', 'script'], ['region', 'region'], ['character', 'character']]) {
+  for (const [page, script] of [['world', 'script'], ['region', 'region'], ['character', 'character']]) {
     const html = await readFile(new URL(`../src/${page}.html`, import.meta.url), 'utf8');
     for (const match of html.matchAll(/(?:src|href)="(\.\/[^"?#]+\.(?:js|css|png|glb))"/g)) await readFile(new URL(`../src/${match[1]}`, import.meta.url));
     assert.ok(html.indexOf('./content.js') < html.indexOf('./navigation.js'));
@@ -66,6 +68,16 @@ test('all page assets resolve and shared scripts load before route scripts', asy
     assert.ok(html.includes('./explorer.css'));
     assert.ok(!html.includes('auto-rotate'));
   }
+  const archive = await readFile(new URL('../src/index.html', import.meta.url), 'utf8');
+  for (const match of archive.matchAll(/(?:src|href)="(\.\/[^"?#]+\.(?:js|css|png|glb))"/g)) await readFile(new URL(`../src/${match[1]}`, import.meta.url));
+  assert.ok(archive.indexOf('./content.js') < archive.indexOf('./archive.js'));
+  assert.ok(archive.includes('./archive.css'));
+});
+test('world-aware URLs preserve the full archive hierarchy', async () => {
+  const atlas = await setup();
+  assert.equal(atlas.worldUrl('fractured-realm'), './world.html?id=fractured-realm');
+  assert.equal(atlas.regionUrl('fractured-realm', 'citadel'), './region.html?world=fractured-realm&id=citadel');
+  assert.equal(atlas.characterUrl('fractured-realm', 'ashen', 'warden'), './character.html?world=fractured-realm&region=ashen&id=warden');
 });
 test('scene has honest empty state and handles loading failure / retry / success', async () => {
   class Element {
