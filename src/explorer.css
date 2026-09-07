@@ -1,0 +1,66 @@
+/* Explorer refinements: preserve the original midnight / brass art direction. */
+[hidden] { display:none !important; }
+:focus-visible { outline:2px solid var(--gold); outline-offset:5px; }
+.world { height:100dvh; min-height:0; }
+.world-model { z-index:0; animation:none; touch-action:none; }
+.map-shade { z-index:1; pointer-events:none; background:linear-gradient(0deg,rgba(4,11,16,.9),transparent 32%); }
+.world::after { z-index:2; }
+.intro-copy { z-index:3; top:auto; bottom:100px; left:3vw; width:auto; max-width:440px; transform:none; animation:none; pointer-events:none; }
+.intro-copy h1 { font-size:clamp(28px,3vw,48px); line-height:1; margin:14px 0; }
+.intro-copy > p:not(.eyebrow) { font-size:16px; }
+.intro-copy .eyebrow { font-size:12px; letter-spacing:.12em; }
+.scroll-cue, .map-index { display:none; }
+.topbar { pointer-events:none; }
+.topbar a,.topbar button { pointer-events:auto; }
+.world-wordmark small,.world-status,.contact-link { font-size:12px; }
+.world-controls { position:absolute; z-index:4; top:100px; right:3vw; display:flex; align-items:center; gap:20px; font-size:14px; }
+.world-controls > span { pointer-events:none; color:#b3bdbc; }
+.world-controls button,.region-picker button,.scene-state button { min-height:44px; padding:10px 16px; color:var(--paper); background:#0a171fea; border:1px solid var(--line); border-radius:4px; }
+.world-controls button:hover,.region-picker button:hover { border-color:var(--gold); }
+.region-picker { position:absolute; bottom:24px; left:3vw; right:3vw; display:flex; flex-wrap:wrap; gap:10px; z-index:4; }
+.region-picker button { font-size:14px; }
+.map-pin { animation:none; min-width:44px; min-height:44px; }
+.pin-label > span,.pin-label b { font-size:14px; }
+.pin-label small { font-size:12px; color:#b3bdbc; }
+.map-pin:hover .pin-dot,.map-pin:focus-visible .pin-dot { background:var(--pin); box-shadow:0 0 28px var(--pin); }
+.pin-pulse { animation:none; }
+.scene-state { position:absolute; z-index:5; top:50%; left:50%; transform:translate(-50%,-50%); width:min(380px,85%); padding:24px; text-align:center; border:1px solid var(--line); border-radius:8px; background:#09141bf2; font-size:16px; line-height:1.7; }
+.scene-state p { margin:0 0 12px; }
+.rail-menu a > span { font-size:14px; }
+.rail-menu a small { font-size:12px; }
+.rail-era,.era-mark,.breadcrumb { font-size:12px; }
+.inner-copy .lead { font-size:16px; }
+.inner-copy h1 { font-size:clamp(36px,4vw,64px); line-height:1.05; overflow-wrap:anywhere; }
+.inner-meta small,.roster-title,.roster small,.demo-badge { font-size:12px; line-height:1.6; }
+.inner-meta b,.roster b,.back-link,.eyebrow { font-size:14px; line-height:1.6; }
+.viewer-instruction { font-size:12px; pointer-events:none; }
+.demo-badge { z-index:3; top:76px; pointer-events:none; }
+.route-notice { padding:12px; color:var(--gold); border:1px solid var(--line); font-size:14px; line-height:1.6; }
+.contact-dialog > p:last-child { font-size:16px; line-height:1.7; }
+@media(max-width:900px) {
+  .world { height:calc(100dvh - 62px); }
+  .world-controls { top:82px; left:16px; right:16px; justify-content:space-between; gap:8px; }
+  .world-controls > span { font-size:12px; }
+  .intro-copy { left:16px; bottom:96px; max-width:calc(100% - 32px); }
+  .intro-copy h1 { font-size:28px; margin:8px 0; }
+  .intro-copy .eyebrow { display:none; }
+  .region-picker { left:16px; right:16px; bottom:16px; flex-wrap:nowrap; overflow:auto; }
+  .region-picker button { white-space:nowrap; font-size:12px; padding:8px 12px; }
+  .pin-label { display:none; }
+  body.inner-page { height:auto; overflow:auto; }
+  .inner-nav { left:0; padding:0 20px; }
+  .inner-main { height:auto; min-height:calc(100dvh - 62px); grid-template-columns:1fr; padding:8px; }
+  .inner-viewer { min-height:58svh; }
+  .inner-copy { padding:32px 24px; }
+  .breadcrumb { display:flex; flex-wrap:wrap; letter-spacing:.04em; }
+  .era-mark { display:none; }
+  .inner-copy h1 { font-size:40px; }
+  .contact-dialog { padding:60px 24px 24px; }
+}
+@media(max-height:500px) {
+  .intro-copy { display:none; }
+  .world-controls { top:72px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { transition:none !important; animation:none !important; }
+}
