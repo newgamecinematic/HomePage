@@ -1,6 +1,6 @@
 # ATLAS — 3D Worldbuilding Archive
 
-한 화면의 3D 지도에서 지역을 탐험하고 인물의 이야기를 읽는 세계관 아카이브.
+여러 세계관을 고른 뒤 3D 지도에서 지역을 탐험하고 인물의 이야기를 읽는 세계관 아카이브.
 
 ## 실행 및 검증
 
@@ -17,7 +17,8 @@ npm run build
 
 ## 화면과 조작
 
-- **World:** 드래그 회전, 스크롤/핀치 확대, 지역 핀 또는 하단 지역 버튼으로 이동.
+- **Archive:** 여러 세계관을 한 화면에서 선택하는 최상위 페이지.
+- **World:** 선택한 세계의 지도를 드래그 회전, 스크롤/핀치 확대하고 지역 핀 또는 하단 버튼으로 이동.
 - **Region:** 해당 지역만의 환경 모델과 설정, 그 지역에 소속된 인물 목록.
 - **Character:** 인물 설정과 전용 모델. 아직 제공되지 않은 모델은 준비 중으로 표시.
 - World로 돌아가면 탭 안에 저장된 마지막 지도 시점이 복원됩니다.
@@ -26,7 +27,7 @@ npm run build
 
 ## 콘텐츠 교체
 
-`src/content.js`에서 지역 설정, 소속 인물, 모델 경로, 지도 좌표(`position`), 접근 카메라(`view`)를 관리합니다.
+`src/content.js`에서 세계관, 지역 설정, 소속 인물, 모델 경로, 지도 좌표(`position`), 접근 카메라(`view`)를 관리합니다. 새 세계관은 `worlds`에 추가하고 그 세계가 사용하는 지역 ID를 `regions` 배열에 연결하면 Archive에 자동으로 표시됩니다.
 
 - 월드 지도: `src/assets/demo-world.glb`
 - 지역 환경: `src/assets/region-grove.glb`, `region-citadel.glb`, `region-ashen.glb`
@@ -41,7 +42,9 @@ npm run build
 
 ## 구조
 
-- `src/navigation.js`: 경로 해석, 선택 지역, 지도 시점 저장
+- `src/index.html`, `src/archive.js`: 세계관 선택 아카이브
+- `src/world.html`: 선택한 세계의 3D 지도
+- `src/navigation.js`: World → Region → Character 경로 해석, 선택 지역, 지도 시점 저장
 - `src/scene.js`: 공통 모델 로딩/실패/재시도/빈 상태
 - `src/script.js`: 월드 조작 및 지역 이동
 - `src/region.js`, `src/character.js`: 각각의 상세 기록
