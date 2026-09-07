@@ -1,4 +1,20 @@
 window.ATLAS_DATA = {
+  defaultWorld: "fractured-realm",
+  worlds: {
+    "fractured-realm": {
+      name: "The Fractured Realm",
+      kicker: "WORLD 01 · THE FALLEN LIGHT",
+      archiveDescription: "하늘에서 떨어진 빛이 세 대지를 갈라놓고 서로 다른 문명을 깨운 세계.",
+      titleLine: "THE FRACTURED",
+      titleEmphasis: "REALM.",
+      description: "세 개의 대지, 서로 다른 빛의 기억.",
+      era: "746",
+      accent: "#d59c59",
+      model: "./assets/demo-world.glb",
+      poster: "./assets/world-map.png",
+      regions: ["grove", "citadel", "ashen"]
+    }
+  },
   regions: {
     grove: {
       name: "Aether Grove", chapter: "Chapter I", type: "Northern Sanctuary", accent: "#74b9b2",

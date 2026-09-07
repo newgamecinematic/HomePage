@@ -1,0 +1,23 @@
+const atlas = window.ATLAS;
+const list = document.querySelector('#world-list');
+const worlds = Object.entries(atlas.worlds);
+document.querySelector('#archive-count').textContent = String(worlds.length).padStart(2, '0');
+worlds.forEach(([key, world], index) => {
+  const item = document.createElement('li');
+  const link = document.createElement('a'); link.href = atlas.worldUrl(key);
+  link.style.setProperty('--world-accent', world.accent);
+  const figure = document.createElement('figure');
+  const image = document.createElement('img'); image.src = world.poster; image.alt = ''; image.loading = index ? 'lazy' : 'eager';
+  const shade = document.createElement('span'); shade.className = 'world-card-shade';
+  const number = document.createElement('span'); number.className = 'world-number'; number.textContent = String(index + 1).padStart(2, '0');
+  figure.append(image, shade, number);
+  const copy = document.createElement('span'); copy.className = 'world-card-copy';
+  const kicker = document.createElement('small'); kicker.textContent = world.kicker;
+  const title = document.createElement('strong'); title.textContent = world.name;
+  const description = document.createElement('span'); description.textContent = world.archiveDescription;
+  const meta = document.createElement('span'); meta.className = 'world-card-meta';
+  meta.textContent = `${world.regions.length} REGIONS · ERA ${world.era}`;
+  copy.append(kicker, title, description, meta);
+  const enter = document.createElement('span'); enter.className = 'world-enter'; enter.textContent = 'ENTER WORLD ↗';
+  link.append(figure, copy, enter); item.append(link); list.append(item);
+});

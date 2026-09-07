@@ -2,13 +2,25 @@ const worldViewer = document.querySelector('#world-model');
 const archiveDialog = document.querySelector('#contact-dialog');
 const atlas = window.ATLAS;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const requestedWorld = new URLSearchParams(location.search).get('id');
+const { worldKey, world, invalidWorld } = atlas.resolveWorld(requestedWorld);
+if (invalidWorld) history.replaceState(null, '', atlas.worldUrl(worldKey));
+document.title = `${world.name} — ATLAS`;
+document.querySelector('#world-name').textContent = world.name.toUpperCase();
+document.querySelector('#world-kicker').textContent = `${world.name.toUpperCase()} · YEAR ${world.era}`;
+document.querySelector('#world-title-line').textContent = world.titleLine;
+document.querySelector('#world-title-emphasis').textContent = world.titleEmphasis;
+document.querySelector('#world-description').textContent = world.description;
+document.querySelector('#world-era').textContent = world.era;
+document.querySelector('#world-era-index').textContent = `ERA · ${world.era}`;
+document.querySelector('#region-count').textContent = String(world.regions.length).padStart(2, '0');
 let navigating = false, pointerStart = null, moved = false, transitionTimer;
 let restoring = true;
 // Derive both 3D hotspots and the keyboard/mobile list from the same content.
 worldViewer.querySelectorAll('[data-project]').forEach(pin => pin.remove());
 const picker = document.querySelector('.region-picker');
 picker.replaceChildren();
-Object.entries(atlas.regions).forEach(([key, region], index) => {
+world.regions.map(key => [key, atlas.regions[key]]).forEach(([key, region], index) => {
   const pin = document.createElement('button');
   pin.className = 'map-pin'; pin.style.setProperty('--pin', region.accent);
   pin.slot = `hotspot-${key}`; pin.dataset.project = key;
@@ -39,8 +51,8 @@ function restoreCamera() {
 function selectRegion(key) {
   if (navigating || !Object.hasOwn(atlas.regions, key)) return;
   saveCamera(); navigating = true;
-  atlas.syncNavigation(key);
-  const go = () => { location.href = atlas.regionUrl(key); };
+  atlas.syncNavigation(worldKey, key);
+  const go = () => { location.href = atlas.regionUrl(worldKey, key); };
   if (reducedMotion.matches || typeof worldViewer.getCameraOrbit !== 'function' || !worldViewer.loaded) { go(); return; }
   worldViewer.cameraTarget = atlas.regions[key].view.target;
   worldViewer.cameraOrbit = atlas.regions[key].view.orbit;
@@ -79,8 +91,9 @@ document.querySelector('#reset-camera').addEventListener('click', () => {
   worldViewer.setAttribute('camera-orbit', '0deg 48deg 17m');
   worldViewer.setAttribute('camera-target', 'auto auto auto');
 });
-atlas.syncNavigation(atlas.resolveRegion(atlas.read('selection')?.region).key);
-mountAtlasScene(worldViewer, './assets/demo-world.glb');
+const selection = atlas.read('selection');
+atlas.syncNavigation(worldKey, selection?.world === worldKey ? selection.region : world.regions[0]);
+mountAtlasScene(worldViewer, world.model);
 document.querySelectorAll('[data-open-contact]').forEach(button => button.addEventListener('click', () => archiveDialog.showModal()));
 document.querySelectorAll('.dialog-close').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
 archiveDialog.addEventListener('click', event => {
